@@ -45,16 +45,6 @@
             background-color: #f5f5f5;
         }
 
-        .form-signin {
-            width: 100%;
-            max-width: 330px;
-            padding: 15px;
-            margin: auto;
-        }
-
-        .form-signin .checkbox {
-            font-weight: 400;
-        }
 
         .form-signin .form-floating:focus-within {
             z-index: 2;
@@ -72,18 +62,79 @@
             border-top-right-radius: 0;
         }
 
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+        .container {
+            max-width: 960px;
+        }
+
+
     </style>
 
 </head>
 <body class="text-center">
 
 <main class="form-signin">
-    <form>
+
+    <form class="needs-validation" novalidate="">
         <img class="mb-4"
              src="https://www.uni-corvinus.hu/contents/themes/corvinus-theme/library/img/corvinus_logo_magyar_sz_transparent.png"
              alt="" width="72" height="57">
         <h1 class="h3 mb-3 fw-normal">Registráció</h1>
+        <div class="row g-3">
+            <div class="col-sm-6">
+                <label for="firstName" class="form-label">First name</label>
+                <input type="text" class="form-control" id="firstName" placeholder="" value="" required="">
+                <div class="invalid-feedback">
+                    Valid first name is required.
+                </div>
+            </div>
 
+            <div class="col-sm-6">
+                <label for="lastName" class="form-label">Last name</label>
+                <input type="text" class="form-control" id="lastName" placeholder="" value="" required="">
+                <div class="invalid-feedback">
+                    Valid last name is required.
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label for="username" class="form-label">Username</label>
+                <div class="input-group has-validation">
+                    <span class="input-group-text">@</span>
+                    <input type="text" class="form-control" id="username" placeholder="Username" required="">
+                    <div class="invalid-feedback">
+                        Your username is required.
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <label for="password" class="form-label">Jelszó</label>
+                <div class="input-group has-validation">
+                    <input type="password" class="form-control" id="password" placeholder="Jelszó" required="">
+                    <div class="invalid-feedback">
+                        Your password is required.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <hr class="my-4">
+
+        <button id="register" class="w-100 btn btn-primary btn-lg" type="submit">Registráció</button>
         <p class="mt-5 mb-3 text-muted">4. beadandó feladat</p>
     </form>
 </main>
@@ -99,14 +150,46 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
         integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
         crossorigin="anonymous"></script>
+<script src="passwordService.js"></script>
 
 <script>
     function login(cookie) {
         throw 'not implemented';
     }
 
-    $(document).ready(function () {
+    async function getLoginData() {
+        const user = $('input#username').val();
+        const firstName = $('input#firstName').val();
+        const lastName = $('input#lastName').val();
+        let password = $('input#password').val();
 
+        if (!user || !password) {
+            alert('Töltse ki a mezőket!')
+            throw 'data not set';
+        }
+        const passwordHash = await hash(password);
+        password = null;
+        return {
+            user: user,
+            password: passwordHash,
+            firstName: firstName,
+            lastName: lastName,
+        }
+    }
+
+    $(document).ready(function () {
+        $('#register').click(async function (event) {
+            event.preventDefault()
+            const loginData = await getLoginData()
+
+            $.post(`/register?user=${loginData.user}&password=${loginData.password}&firstName=${loginData.firstName}&lastName=${loginData.lastName}`, function (result) {
+                console.log(result);
+                const cookie = '';
+                if (1) {
+                    login(cookie);
+                }
+            })
+        })
     })
 
 </script>

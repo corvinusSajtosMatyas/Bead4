@@ -85,7 +85,7 @@
         <h1 class="h3 mb-3 fw-normal">Bejelentkezés</h1>
 
         <div class="form-floating">
-            <input type="email" class="form-control" id="floatingInput" placeholder="">
+            <input type="text" class="form-control" id="floatingInput" placeholder="">
             <label for="floatingInput">Felhasználónév</label>
         </div>
         <div class="form-floating">
@@ -113,19 +113,36 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
         integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
         crossorigin="anonymous"></script>
+<script src="passwordService.js"></script>
 
 <script>
     function login(cookie) {
         throw 'not implemented';
     }
 
-    $(document).ready(function () {
-        $('#login').click(function (event) {
-            event.preventDefault()
-            const user = $('input#floatingInput').val();
-            const password = $('input#floatingPassword').val();
+    async function getLoginData() {
+        const user = $('input#floatingInput').val();
+        let password = $('input#floatingPassword').val();
 
-            $.ajax(`/login?user=${user}&password=${password}`,function (result) {
+        if (!user || !password) {
+            alert('Töltse ki a mezőket!')
+            throw 'data not set';
+        }
+        const passwordHash = await hash(password);
+        password = null;
+        return {
+            user: user,
+            password: passwordHash
+        }
+    }
+
+    $(document).ready(function () {
+        $('#login').click(async function (event) {
+            event.preventDefault()
+            const loginData = await getLoginData()
+
+            $.post(`/login?user=${loginData.user}&password=${loginData.password}`, function (result) {
+                console.log(result);
                 const cookie = '';
                 if (1) {
                     login(cookie);
@@ -135,7 +152,7 @@
 
         $('#register').click(function (event) {
             event.preventDefault()
-            window.open('/register.html','_self');
+            window.open('/register.html', '_self');
         })
     })
 
