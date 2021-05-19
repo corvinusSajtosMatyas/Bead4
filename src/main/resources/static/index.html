@@ -143,6 +143,7 @@
 
             $.post(`/login?user=${loginData.user}&password=${loginData.password}`, function (result) {
                 console.log(result);
+                alert(result);
                 const cookie = '';
                 if (1) {
                     login(cookie);

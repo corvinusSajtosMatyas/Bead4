@@ -12,8 +12,8 @@ import javax.persistence.*;
 @Table(name = "user")
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Component
 public class User {
     @Id
