@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class UserService {
     @Autowired
@@ -30,31 +29,49 @@ public class UserService {
         return userRepository.findById(userId);
     }
 
-    public List<User> getAllUserByUsername(final String username) {
-        return userRepository.findUserByUsername(username);
+    public User getUserByUsername(final String username) {
+        List<User> userWithUsername = userRepository.findUserByUsername(username);
+        if (userWithUsername.isEmpty()) {
+            return null;
+        } else {
+            return userWithUsername.get(0);
+        }
     }
 
     public String register(String userName, String password, String firstName, String lastName) {
-//        TODO:check password length
-//        TODO:error handling for user id already registered
 
-        User user = User.builder()
-                .username(userName)
-                .password(password)
-                .first_name(firstName)
-                .last_name(lastName)
-                .build();
-        userRepository.save(user);
-        return "Success!";
+        User userWithUsername = getUserByUsername(userName);
+        if (userWithUsername == null) {
+            if (password.length() >= 8) {
+                if (userName.length() >= 6) {
+                    User user = User.builder().username(userName).password(password).first_name(firstName)
+                            .last_name(lastName).build();
+                    userRepository.save(user);
+                    return "Regisztráció megtörtént!";
+                } else {
+                    return "A felhasználónév nem elég hosszú!";
+                }
+            } else {
+                return "A jelszó nem elég hosszú!";
+            }
+        } else {
+            // error handling for user id already registered
+            return "A felhasználónév már használatban van!";
+
+        }
+
     }
 
     public String login(String user, String password) {
-        List<User> userWithUsername = userRepository.findUserByUsername(user);
-        if (userWithUsername.isEmpty()) {
-            return "NOK";
+        User userWithUsername = getUserByUsername(user);
+        if (userWithUsername == null) {
+            return "A felhasználó nem létzik!";
         } else {
-
-            return "OK";
+            if (userWithUsername.getPassword().equals(password)) {
+                return "OK";
+            } else {
+                return "A felhasználónév/jelszó nem helyes!";
+            }
         }
     }
 

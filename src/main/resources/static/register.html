@@ -184,6 +184,7 @@
 
             $.post(`/register?user=${loginData.user}&password=${loginData.password}&firstName=${loginData.firstName}&lastName=${loginData.lastName}`, function (result) {
                 console.log(result);
+                alert(result)
                 const cookie = '';
                 if (1) {
                     login(cookie);
