@@ -27,4 +27,6 @@ public class User {
     private String last_name;
     @Column(name = "password")
     private String password;
+    @Column(name = "session")
+    private String session;
 }

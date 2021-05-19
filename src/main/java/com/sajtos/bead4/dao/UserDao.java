@@ -7,5 +7,4 @@ import java.util.Collection;
 public interface UserDao {
     Collection<User> readAll();
 
-    void save(User complexNumber);
 }
